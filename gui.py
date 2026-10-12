@@ -78,7 +78,7 @@ def create_application():
         text="Message Box",
         font=("Arial", 12),
         bg="#b8cce4"
-    ).place(x=5, y=90)
+    ).place(x=5, y=80)
 
     message_frame = tk.Frame(
         content,
