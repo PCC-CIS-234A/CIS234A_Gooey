@@ -1,5 +1,5 @@
 import tkinter as tk
-from tkinter import ttk
+from tkinter import ttk, messagebox
 
 
 def create_application():
@@ -150,7 +150,17 @@ def create_application():
     food_category = ttk.Combobox(
         food_frame,
         width=10,
-        state="readonly"
+        state="readonly",
+        values=[
+            "Produce",
+            "Dairy",
+            "Meat",
+            "Bakery",
+            "Canned Goods",
+            "Dry Goods",
+            "Frozen",
+            "Other"
+        ]
     )
     food_category.pack(side="left")
 
@@ -163,7 +173,14 @@ def create_application():
     quantity = ttk.Combobox(
         food_frame,
         width=7,
-        state="readonly"
+        state="readonly",
+        values=[
+            "1-10",
+            "11-25",
+            "26-50",
+            "51-100",
+            "100+"
+        ]
     )
     quantity.pack(side="left")
 
@@ -176,7 +193,13 @@ def create_application():
     available_until = ttk.Combobox(
         food_frame,
         width=12,
-        values=["10/5/2026"],
+        values=[
+            "10/14/2026",
+            "10/15/2026",
+            "10/16/2026",
+            "10/17/2026",
+            "10/18/2026"
+        ],
         state="readonly"
     )
     available_until.pack(side="left")
@@ -200,10 +223,26 @@ def create_application():
         "Sylvana"
     ]
 
+    location_vars = {}
+
+    def update_locations(location):
+        """Select all campuses when All Campus is checked."""
+        if location == "All Campus":
+            select_all = location_vars["All Campus"].get()
+
+            for campus, variable in location_vars.items():
+                variable.set(select_all)
+        else:
+            location_vars["All Campus"].set(False)
+
     for location in locations:
+        location_vars[location] = tk.BooleanVar()
+
         tk.Checkbutton(
             location_frame,
             text=location,
+            variable=location_vars[location],
+            command=lambda name=location: update_locations(name),
             bg="#b8cce4",
             activebackground="#b8cce4"
         ).pack(side="left", padx=8)
@@ -240,6 +279,132 @@ def create_application():
     ).pack(anchor="w", padx=8)
 
     # ---------------------------------------------------------
+    # Button functions
+    # ---------------------------------------------------------
+
+    def validate_notification():
+        """Check that all required notification fields are filled in."""
+        subject = subject_entry.get().strip()
+        message = message_text.get("1.0", tk.END).strip()
+
+        if not subject:
+            messagebox.showerror(
+                "Missing Subject",
+                "Please enter a notification subject."
+            )
+            subject_entry.focus_set()
+            return False
+
+        if not message:
+            messagebox.showerror(
+                "Missing Message",
+                "Please enter a notification message."
+            )
+            message_text.focus_set()
+            return False
+
+        if not food_category.get():
+            messagebox.showerror(
+                "Missing Food Category",
+                "Please select a food category."
+            )
+            food_category.focus_set()
+            return False
+
+        if not quantity.get():
+            messagebox.showerror(
+                "Missing Quantity",
+                "Please select a quantity."
+            )
+            quantity.focus_set()
+            return False
+
+        if not available_until.get():
+            messagebox.showerror(
+                "Missing Availability Date",
+                "Please select an available-until date."
+            )
+            available_until.focus_set()
+            return False
+
+        selected_locations = [
+            location for location, variable in location_vars.items()
+            if variable.get()
+        ]
+
+        if not selected_locations:
+            messagebox.showerror(
+                "Missing Location",
+                "Please select at least one campus."
+            )
+            return False
+
+        return True
+
+    def preview_notification():
+        """Display a preview of the notification."""
+        subject = subject_entry.get().strip()
+        message = message_text.get("1.0", tk.END).strip()
+
+        if not validate_notification():
+            return
+
+        selected_locations = [
+            location for location, variable in location_vars.items()
+            if variable.get()
+        ]
+
+        preview = (
+            f"Subject: {subject}\n\n"
+            f"Message:\n{message}\n\n"
+            f"Format: {format_choice.get().upper()}\n"
+            f"Food Category: {food_category.get() or 'Not selected'}\n"
+            f"Quantity: {quantity.get() or 'Not selected'}\n"
+            f"Available Until: {available_until.get() or 'Not selected'}\n"
+            f"Locations: {', '.join(selected_locations) or 'None selected'}"
+        )
+
+        messagebox.showinfo("Notification Preview", preview)
+
+    def clear_form():
+        """Clear the subject and message fields."""
+        subject_entry.delete(0, tk.END)
+        message_text.delete("1.0", tk.END)
+        template_combo.set("")
+        food_category.set("")
+        quantity.set("")
+        available_until.set("")
+        format_choice.set("email")
+
+    def send_notification():
+        """Validate the notification before sending."""
+        if not validate_notification():
+            return
+
+        subject = subject_entry.get().strip()
+        message = message_text.get("1.0", tk.END).strip()
+        category = food_category.get()
+        food_quantity = quantity.get()
+        available_date = available_until.get()
+
+        selected_locations = [
+            location for location, variable in location_vars.items()
+            if variable.get() and location != "All Campus"
+        ]
+
+        messagebox.showinfo(
+            "Notification Ready",
+            "Your notification passed validation.\n\n"
+            f"Subject: {subject}\n"
+            f"Food Category: {category}\n"
+            f"Quantity: {food_quantity}\n"
+            f"Available Until: {available_date}\n"
+            f"Locations: {', '.join(selected_locations)}\n"
+            f"Format: {format_choice.get().upper()}\n\n"
+            "No email or SMS has been sent yet."
+        )
+
+    # ---------------------------------------------------------
     # Right-side buttons
     # ---------------------------------------------------------
     button_width = 18
@@ -247,19 +412,22 @@ def create_application():
     tk.Button(
         content,
         text="Clear Form",
-        width=button_width
+        width=button_width,
+        command=clear_form
     ).place(x=750, y=135)
 
     tk.Button(
         content,
         text="Preview",
-        width=button_width
+        width=button_width,
+        command=preview_notification
     ).place(x=750, y=295)
 
     tk.Button(
         content,
         text="Send Notification",
-        width=button_width
+        width=button_width,
+        command=send_notification
     ).place(x=750, y=360)
 
     window.mainloop()
