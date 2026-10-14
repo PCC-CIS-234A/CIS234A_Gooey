@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Portland Community College Food Pantry | Account Creation</title>
+	
+	<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=visibility" />
+	<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=visibility_off" />
+	
+	<link rel="stylesheet" href="styles.css">
+
+	<script src="script.js" defer ></script>
+</head>
+
+<body>
+	<nav>
+		<ul>
+			<li><a href="account_creation.html">Account Creation</a></li>
+			<li><a href="login.html">Log In</a></li>
+			<li>Notification</li>
+			<li>Template</li>
+			<li>Log Review</li>
+		</ul>
+	</nav>
+	<main class="account-page">
+		<header class="page-header">
+			<h1>Portland Community College Food Pantry</h1>
+			<p>Login to your account.</p>
+		</header>
+		
+		<form class="login-fields">
+			<div class="field">
+				<label for="username">Username or E-mail Address</label>
+				<input type="text" id="username" name="username">
+			</div>
+			
+			<div class="field">
+				<label for="pword">Password</label>
+				
+				<div class="password-wrapper">
+					<input type="password" id="pword" name="pword">
+					<button type="button" class="visibility-toggle">
+						<span class="material-symbols-outlined">
+							visibility
+						</span>
+					</button>
+				</div>
+			</div>
+			
+			<div class="form-actions">
+				<button type="submit">Login</button>
+				<a href="index.html" class="back-button">Create an Account</a>
+				<button type="reset">Clear/Cancel</button>
+			</div>
+		</form>
+	</main>
+</body>
+</html>
