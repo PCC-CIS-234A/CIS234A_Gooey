@@ -2,7 +2,7 @@
 # ******************************************************************************
 # Programmer:   Yejide Momoh Gbada
 #
-# Date:         10/14/2026
+# Date:         10/16/2026
 #
 # Description:  This program creates the graphical user interface (GUI) for
 #               Portland Community College Food Pantry reusable Notification
@@ -15,25 +15,29 @@
 import tkinter as tk
 from tkinter import ttk
 from tkinter import messagebox
+from Logic import TemplateLogic
 
 
 class TemplateGUI:
-
+    """
+    This function acts as the setup blueprint for the template GUI.
+     It contains the main window settings.
+    """
     def __init__(self, root):
-        """
-        This function acts as the setup blueprint for the template GUI.
-        It contains the main window settings.
-        """
-
         self.root = root
-        self.root.title("Template Manager")
-        self.root.geometry("850x550")
+        self.root.title("Template Creation")
+        self.root.geometry("1050x600")
         self.root.configure(bg="#b8cce4")
-        self.all_templates = {}
 
-        # -------------------------------------------------
-        #  Horizontal Top Menu Bar
-        # -------------------------------------------------
+        # Link instantiation to manage clean system transactions
+        self.logic = TemplateLogic()
+
+        self.root.rowconfigure(0, weight=1)
+        self.root.columnconfigure(0, weight=1)
+
+        # -------------------------------------------------------------
+        # Horizontal Top Menu Bar
+        # -------------------------------------------------------------
         menu_bar = tk.Menu(self.root)
         self.root.config(menu=menu_bar)
         menu_bar.add_command(label="Account Creation")
@@ -42,248 +46,208 @@ class TemplateGUI:
         menu_bar.add_command(label="Template")
         menu_bar.add_command(label="Log Review")
 
-        # -------------------------------------------------
-        # Builds Main container with Padding and Page title
-        # -------------------------------------------------
-
-        main_frame = tk.Frame(self.root, bg="#b8cce4", padx=20, pady=10)
+        # -------------------------------------------------------------
+        # Main Layout Grid
+        # -------------------------------------------------------------
+        main_frame = tk.Frame(self.root, bg="#b8cce4", padx=30, pady=20)
         main_frame.grid(row=0, column=0, sticky="nsew")
+        main_frame.columnconfigure(0, weight=1)
+        main_frame.columnconfigure(1, weight=3)
 
-        self.root.grid_rowconfigure(0, weight=1)
-        self.root.grid_columnconfigure(0, weight=1)
+        # Header Title
+        header_lbl = tk.Label(main_frame, text="Template", font=("Arial", 25, "bold"), bg="#b8cce4", fg="#333333")
+        header_lbl.grid(row=0, column=0, columnspan=3, pady=(0, 25))
 
-        # ------------------ TITLE ------------------
-
-        title_label = tk.Label(
-            main_frame,
-            text="Template",
-            font=("Arial", 24, "normal"),
-            bg="#b8cce4",
-            fg="black",
-        )
-        title_label.grid(row=0, column=0, columnspan=3, pady=(0, 20), sticky="n")
-
-        # -------------------------------------------------
-        # Builds the Left side
-        # -------------------------------------------------
-
+        # -------------------------------------------------------------
+        # Builds the Left Column of GUI
+        # lbl represents Label
+        # btn represents Button
+        # -------------------------------------------------------------
         left_frame = tk.Frame(main_frame, bg="#b8cce4")
-        left_frame.grid(row=1, column=0, sticky="nw", padx=(0, 20))
+        left_frame.grid(row=1, column=0, sticky="nsew", padx=(0, 30))
+        left_frame.columnconfigure(0, weight=0)
+        left_frame.columnconfigure(1, weight=3)
+        left_frame.columnconfigure(2, weight=1)
 
-        # Template Name
-        tk.Label(
-            left_frame, text="Template Name", font=("Arial", 11), bg="#b8cce4"
-        ).grid(row=0, column=0, sticky="w", pady=5)
-        self.template_name_entry = tk.Entry(left_frame, width=35, font=("Arial", 11))
-        self.template_name_entry.grid(row=0, column=1, columnspan=2, sticky="w", padx=10, pady=5)
+        # Template Name Input
+        lbl_template_name = tk.Label(left_frame, text="Template Name", font=("Arial", 11), bg="#b8cce4")
+        lbl_template_name.grid(row=0, column=0, sticky="w", pady=8)
+        self.template_name_entry = tk.Entry(left_frame, font=("Arial", 11))
+        self.template_name_entry.grid(row=0, column=1, sticky="ew", pady=8, padx=(10, 0))
 
-        # Insert Tag
-        tk.Label(
-            left_frame, text="Insert Tags", font=("Arial", 11), bg="#b8cce4"
-        ).grid(row=1, column=0, sticky="w", pady=5)
-        self.tag_list = ["[Food Available]", "[Time]", "[Notification_Date]", "[Location]", "[Fruits]", "[Canned]",
-                         "[Prepared Meal]"]
+        # Insert Tags List Combo Dropdown
+        lbl_insert_tags = tk.Label(left_frame, text="Insert Tags", font=("Arial", 11), bg="#b8cce4")
+        lbl_insert_tags.grid(row=1, column=0, sticky="w", pady=8)
+        self.select_log_combobox = ttk.Combobox(left_frame, values=TemplateLogic.DEFAULT_LOGS, font=("Arial", 11),
+                                                state="readonly")
+        self.select_log_combobox.set("Select Notification Tag")
+        self.select_log_combobox.grid(row=1, column=1, sticky="ew", pady=8, padx=(10, 0))
+        self.select_log_combobox.bind("<<ComboboxSelected>>", self.select_log_combobox_select)
 
-        self.insert_tags_combo = ttk.Combobox(
-            left_frame, width=32, font=("Arial", 11), values=self.tag_list, state="readonly"
-        )
-        self.insert_tags_combo.set("Select Notification Tag")
-        self.insert_tags_combo.grid(row=1, column=1, columnspan=2, sticky="w", padx=10, pady=5)
-        self.insert_tags_combo.bind("<<ComboboxSelected>>", self.insert_tag_to_textbox)
+        # Create Tag & Add Tag
+        lbl_create_tag = tk.Label(left_frame, text="Create Tag", font=("Arial", 11), bg="#b8cce4")
+        lbl_create_tag.grid(row=2, column=0, sticky="w", pady=8)
 
-        # Create Tag Entry + Add Tag Button
+        tag_input_frame = tk.Frame(left_frame, bg="#b8cce4")
+        tag_input_frame.grid(row=2, column=1, sticky="ew", pady=8, padx=(10, 0))
+        tag_input_frame.columnconfigure(0, weight=1)
 
-        tk.Label(left_frame, text="Create Tag", font=("Arial", 11), bg="#b8cce4").grid(row=2, column=0, sticky="w",
-                                                                                       pady=5)
-        self.create_tag_entry = tk.Entry(left_frame, width=20, font=("Arial", 11))
-        self.create_tag_entry.grid(row=2, column=1, sticky="w", padx=10, pady=5)
+        self.create_log_entry = tk.Entry(tag_input_frame, font=("Arial", 11))
+        self.create_log_entry.grid(row=0, column=0, sticky="ew", padx=(0, 10))
 
-        self.add_tag_btn = tk.Button(left_frame, text="Add Tag", font=("Arial", 10), width=10, bg="#e0e0e0",
-                                     command=self.create_custom_tags)
-        self.add_tag_btn.grid(row=2, column=2, sticky="w", pady=5)
+        btn_add_tag = tk.Button(tag_input_frame, text="Add Tag", font=("Arial", 10), command=self.add_custom_logs,
+                                width=10)
+        btn_add_tag.grid(row=0, column=1, sticky="e")
 
-        # Subject
-        tk.Label(
-            left_frame, text="Subject", font=("Arial", 11), bg="#b8cce4"
-        ).grid(row=3, column=0, sticky="w", pady=5)
-        self.subject_entry = tk.Entry(left_frame, width=35, font=("Arial", 11))
-        self.subject_entry.grid(row=3, column=1, columnspan=2, sticky="w", padx=10, pady=5)
+        # Subject Entry Field
+        lbl_subject = tk.Label(left_frame, text="Subject", font=("Arial", 11), bg="#b8cce4")
+        lbl_subject.grid(row=3, column=0, sticky="w", pady=8)
+        self.subject_entry = tk.Entry(left_frame, font=("Arial", 11))
+        self.subject_entry.grid(row=3, column=1, columnspan=2, sticky="ew", pady=8, padx=(10, 0))
 
-        # Message Box Label
-        tk.Label(
-            left_frame, text="Message Box", font=("Arial", 11), bg="#b8cce4"
-        ).grid(row=4, column=0, sticky="nw", pady=(10, 0))
-        message_frame = tk.Frame(left_frame, bg="white", bd=1, relief="solid")
-        message_frame.grid(row=5, column=0, columnspan=3, sticky="w", pady=10)
+        # Rich-Text Message Box (lbl means label)
+        lbl_message_box = tk.Label(left_frame, text="Message Box", font=("Arial", 11), bg="#b8cce4")
+        lbl_message_box.grid(row=4, column=0, sticky="nw", pady=(10, 2))
 
-        # Formatting Bar
-        format_bar = tk.Frame(message_frame, bg="#f0f0f0", height=30)
-        format_bar.pack(fill="x", side="top")
+        message_container = tk.Frame(left_frame, bg="#ffffff", bd=1, relief="solid")
+        message_container.grid(row=4, column=1, columnspan=2, sticky="nsew", pady=(10, 2), padx=(10, 0))
+        message_container.columnconfigure(0, weight=1)
 
-        btn_b = tk.Button(format_bar, text="B", font=("Arial", 9, "bold"), width=2, relief="flat", bg="#f0f0f0")
-        btn_b.pack(side="left", padx=2)
-        btn_i = tk.Button(format_bar, text="I", font=("Arial", 9, "italic"), width=2, relief="flat", bg="#f0f0f0")
-        btn_i.pack(side="left", padx=2)
-        btn_u = tk.Button(format_bar, text="U", font=("Arial", 9, "underline"), width=2, relief="flat", bg="#f0f0f0")
-        btn_u.pack(side="left", padx=2)
+        toolbar = tk.Frame(message_container, bg="#f0f0f0", height=26)
+        toolbar.grid(row=0, column=0, sticky="ew")
 
-        sep = tk.Label(format_bar, text="|", bg="#f0f0f0", fg="gray")
-        sep.pack(side="left", padx=5)
+        btn_b = tk.Button(toolbar, text="B", font=("Arial", 9, "bold"), relief="flat", bg="#f0f0f0", width=3)
+        btn_b.grid(row=0, column=0, padx=2, pady=2)
+        btn_i = tk.Button(toolbar, text="I", font=("Arial", 9, "italic"), relief="flat", bg="#f0f0f0", width=3)
+        btn_i.grid(row=0, column=1, padx=2, pady=2)
+        btn_u = tk.Button(toolbar, text="U", font=("Arial", 9, "underline"), relief="flat", bg="#f0f0f0", width=3)
+        btn_u.grid(row=0, column=2, padx=2, pady=2)
 
-        btn_img = tk.Button(format_bar, text="🖼 Insert Image", font=("Arial", 9), relief="flat", bg="#f0f0f0")
-        btn_img.pack(side="left", padx=2)
+        self.message_text = tk.Text(message_container, height=12, font=("Arial", 11), bd=0)
+        self.message_text.grid(row=1, column=0, sticky="nsew", padx=5, pady=5)
 
-        # Main Text Editor Area
-        self.message_text = tk.Text(
-            message_frame, width=55, height=12, font=("Arial", 11), wrap="word"
-        )
-        self.message_text.pack(fill="both", expand=True)
-
-        # -------------------------------------------------
-        # Builds the right side
-        # -------------------------------------------------
+        # -------------------------------------------------------------
+        # Builds right column (Template Controls Panel)
+        # lbl represents Label
+        # btn represents Button
+        # -------------------------------------------------------------
 
         right_frame = tk.Frame(main_frame, bg="#b8cce4")
-        right_frame.grid(row=1, column=1, sticky="ne", padx=(20, 0), pady=5)
+        right_frame.grid(row=1, column=1, sticky="nsew", padx=(30, 0))
+        right_frame.columnconfigure(0, weight=1)
 
-        # Load Existing Template Header
-        tk.Label(
-            right_frame, text="Load Existing Template", font=("Arial", 11, "bold"), bg="#b8cce4"
-        ).grid(row=0, column=0, columnspan=2, sticky="w", pady=(0, 5))
+        # Section Header Text Item
+        lbl_load_section = tk.Label(right_frame, text="Load Existing Template", font=("Arial", 12, "bold"),
+                                    bg="#b8cce4", wraplength=180, justify="left")
+        lbl_load_section.grid(row=0, column=0, sticky="w", pady=(0, 15))
 
-        # Select Template Dropdown
-        tk.Label(
-            right_frame, text="Select Template", font=("Arial", 10), bg="#b8cce4"
-        ).grid(row=1, column=0, sticky="w", pady=5)
-        self.select_template_combo = ttk.Combobox(
-            right_frame, width=20, font=("Arial", 10)
-        )
-        self.select_template_combo.grid(row=1, column=1, sticky="w", padx=5, pady=5)
+        # Select Template
+        self.select_template_combobox = ttk.Combobox(right_frame, font=("Arial", 11), state="readonly", width=30)
+        self.select_template_combobox.set("Select Template")
+        self.select_template_combobox.grid(row=1, column=0, sticky="ew", pady=(0, 25))
+        self.select_template_combobox.bind("<<ComboboxSelected>>", self.load_template)
 
-        # -------------------------------------------------
-        # Buttons
-        # -------------------------------------------------
-        buttons_data = [
-            ("Load Template", self.load_template),
-            ("Save Template", self.save_template),
-            ("Clear Template", self.clear_fields),
-            ("Exit", self.root.quit),
-        ]
+        # Buttons for Template interface ( btn means Button)
+        btn_load = tk.Button(right_frame, text="Load Template", font=("Arial", 11), height=2,
+                             command=lambda: self.load_template(None))
+        btn_load.grid(row=2, column=0, sticky="ew", pady=8)
 
-        for idx, (btn_text, btn_cmd) in enumerate(buttons_data):
-            btn = tk.Button(
-                right_frame, text=btn_text, font=("Arial", 10), width=18, height=1, bg="#e8e8e8", command=btn_cmd
-            )
-            btn.grid(row=3 + idx, column=0, columnspan=2, pady=12, sticky="ew")
+        btn_save = tk.Button(right_frame, text="Save Template", font=("Arial", 11), height=2,
+                             command=self.save_template)
+        btn_save.grid(row=3, column=0, sticky="ew", pady=8)
 
-        # -------------------------------------------------
-        # Functions
-        # -------------------------------------------------
+        btn_clear = tk.Button(right_frame, text="Clear Template", font=("Arial", 11), height=2,
+                              command=self.clear_entries)
+        btn_clear.grid(row=4, column=0, sticky="ew", pady=8)
 
-    def clear_fields(self):
-        """Clears all UI fields and resets dropdown options with a popup alert."""
+        btn_exit = tk.Button(right_frame, text="Exit", font=("Arial", 11), height=2, command=self.root.quit)
+        btn_exit.grid(row=5, column=0, sticky="ew", pady=(40, 8))
+
+    # -------------------------------------------------------------
+    # Functions
+    # -------------------------------------------------------------
+    def clear_entries(self):
+        """
+        Clears all UI fields and resets dropdown options with a popup alert.
+        :return:None
+        """
         self.template_name_entry.delete(0, tk.END)
-        self.create_tag_entry.delete(0, tk.END)
+        self.create_log_entry.delete(0, tk.END)
         self.subject_entry.delete(0, tk.END)
         self.message_text.delete("1.0", tk.END)
-        self.insert_tags_combo.set("Select Notification Tag")
-        self.select_template_combo.set("")
-        messagebox.showinfo("Clear Complete", "All text fields have been reset successfully.")
+        self.select_log_combobox.set("Select Notification Tag")
+        self.select_template_combobox.set("Select Template")
 
     def save_template(self):
-        """"
-        This function is a validation and storage that saves user inputted fields,
+        """
+        This function validates and saves user inputted fields,
         such as template name, Notification tags, subject and message text.
         :return: None
         """
+        name = self.template_name_entry.get().strip()
+        subject = self.subject_entry.get().strip()
+        message = self.message_text.get("1.0", tk.END).strip()
+        result_code = TemplateLogic.validate_and_save(name, subject, message)
 
-        try:
-            name = self.template_name_entry.get().strip()
-            subject = self.subject_entry.get().strip()
-            message = self.message_text.get("1.0", tk.END).strip()
+        if result_code == "ERROR_NAME":
+            messagebox.showerror("Error", "Template name cannot be left blank.")
+        elif result_code == "ERROR_SUBJECT":
+            messagebox.showerror("Error", "Template subject cannot be left blank.")
+        elif result_code == "ERROR_MESSAGE":
+            messagebox.showerror("Error", "Template message cannot be left blank.")
+        elif result_code == "SUCCESS":
+            self.select_template_combobox.config(values=list(TemplateLogic.all_templates.keys()))
+            messagebox.showinfo("Success", f"Template'{name} successfully saved.")
 
-            if not name or not subject or not message:
-                messagebox.showwarning("Validation Error", " All fields"
-                                                           "(Template Name, subject, and messagebox) must be filled.")
-                return
-
-            self.all_templates[name] = {
-                "subject": subject,
-                "message": message
-            }
-
-            self.select_template_combo.config(values=list(self.all_templates.keys()))
-            messagebox.showinfo("Success", f"Template '{name}' has been saved successfully!")
-
-        except Exception as e:
-            print(f"Save helper log error: {e}")
-
-    def create_custom_tags(self):
+    def add_custom_logs(self):
         """
-        Reads text from entry box, adds to dropdown, and alerts user via validation popup.
-        :return: None
+        This function passes custom user tag options through input validation.
         """
-        try:
-            new_tag = self.create_tag_entry.get().strip()
-            if not new_tag:
-                messagebox.showwarning("Tag Error", "Tag input field cannot be left blank.")
-                return
+        new_tag = self.create_log_entry.get().strip()
+        current_dropdown_values = list(self.select_log_combobox["values"])
+        result_code = TemplateLogic.format_custom_tag(new_tag, current_dropdown_values)
 
-            formatted_tag = f"{{{new_tag}}}"
-            current_tags = [*self.insert_tags_combo.cget("values")]
+        if result_code == "ERROR_EMPTY":
+            messagebox.showerror("Error", "Tag input field cannot be empty")
+        elif result_code == "ERROR_DUPLICATE":
+            messagebox.showerror("Error", "Tag input already exists")
+        elif result_code == "SUCCESS":
+            current_dropdown_values.append(new_tag)
+            self.select_log_combobox.config(values=current_dropdown_values)
+            messagebox.showinfo("Success", f" New tag'{new_tag}' successfully added")
+            self.create_log_entry.delete(0, tk.END)
 
-            if formatted_tag in current_tags:
-                messagebox.showwarning("Duplicate Tag", f"The tag '{formatted_tag}' already exists in your dropdown.")
-                return
-
-            current_tags.append(formatted_tag)
-            self.insert_tags_combo.config(values=current_tags)
-            self.create_tag_entry.delete(0, tk.END)
-            messagebox.showinfo("Tag Added", f"Successfully added '{formatted_tag}' to your available tags list!")
-
-        except Exception as e:
-            print(f"Error creating tag: {e}")
-
-    def insert_tag_to_textbox(self, event):
+    def select_log_combobox_select(self, event):
         """
-        This function takes selected tag and apply it at the user's cursor point
-        :return: None
+        This function selects a log entry from the dropdown menu.
         """
-        selected_tag = self.insert_tags_combo.get()
+        selected_log = self.select_log_combobox.get()
+        if selected_log != "Select Notification Tag":
+            self.message_text.insert(tk.END, f" [{selected_log}] ")
 
-        if selected_tag != "Select Notification Tag":
-            try:
-                self.message_text.insert(tk.INSERT, f" {selected_tag} ")
-                self.message_text.focus_set()
-            except Exception as e:
-                print(f"Insertion helper log: {e}")
-            self.root.after(500, lambda: self.insert_tags_combo.set("Select Notification Tag"))
-
-    def load_template(self):
+    def load_template(self, event):
         """
-        Loads template from text box and adds it to dropdown.
-        :return: None
+        This function loads a template from the dropdown menu.
         """
         try:
-            selected_name = self.select_template_combo.get().strip()
+            selected_name = self.select_template_combobox.get().strip()
+            result = TemplateLogic.get_saved_template(selected_name)
 
-            if not selected_name or selected_name == "Select Template":
-                messagebox.showwarning("Load Error", "Please select a template to load.")
+            if result == "ERROR_SELECTION" or result == "ERROR_MISSING":
+                messagebox.showwarning("Load Error", "Please select a valid template.")
                 return
-            if selected_name in self.all_templates:
-                self.template_name_entry.delete(0, tk.END)
-                self.subject_entry.delete(0, tk.END)
-                self.message_text.delete("1.0", tk.END)
 
-                template_data = self.all_templates[selected_name]
-                self.template_name_entry.insert(0, selected_name)
-                self.subject_entry.insert(0, template_data["subject"])
-                self.message_text.insert("1.0", template_data["message"])
-                messagebox.showinfo("Success", f"Template '{selected_name}' has been loaded successfully!")
-            else:
-                messagebox.showwarning("Load Error", "Template '{selected_name}' not found.")
+            self.template_name_entry.delete(0, tk.END)
+            self.subject_entry.delete(0, tk.END)
+            self.message_text.delete("1.0", tk.END)
+
+            self.template_name_entry.insert(0, selected_name)
+            self.subject_entry.insert(0, result["subject"])
+            self.message_text.insert(tk.END, result["message"])
+            messagebox.showinfo("Success", f"Template '{selected_name}' loaded successfully")
+
         except Exception as e:
-            print(f"Load template helper log error: {e}")
+            messagebox.showwarning("Load Error", str(e))
 
 
 if __name__ == "__main__":
