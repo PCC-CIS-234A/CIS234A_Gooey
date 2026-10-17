@@ -1,0 +1,272 @@
+<?xml version='1.0' encoding='utf-8'?>
+<interface version="1.5" author="PygubuDesigner 0.41.4">
+  <project>
+    <settings>
+      <setting id="name">Notifacaion_Log_GUI_Pygubu</setting>
+      <setting id="description">an early draft of the UI</setting>
+      <setting id="template">application</setting>
+      <setting id="main_widget">tk1</setting>
+      <setting id="module_namespace" />
+      <setting id="module_name">Notifacation_Log_GUI_Tree</setting>
+      <setting id="main_classname">GUI</setting>
+      <setting id="output_dir">.</setting>
+      <setting id="builder_namespace">custom_widgets</setting>
+      <setting id="output_dir2" />
+      <setting id="generate_code_onsave">False</setting>
+      <setting id="use_i18n">False</setting>
+      <setting id="all_ids_attributes">False</setting>
+      <setting id="import_tkvariables">False</setting>
+      <setting id="use_ttk_styledefinition_file">False</setting>
+      <setting id="use_window_centering_code">False</setting>
+      <setting id="ttk_style_definition_file" />
+    </settings>
+    <customwidgets />
+    <resources />
+  </project>
+  <object class="tk.Tk" id="tk1">
+    <property name="background">#B0C4DE</property>
+    <property name="geometry">1024x768</property>
+    <property name="padx">15</property>
+    <property name="width">800</property>
+    <containerlayout manager="grid">
+      <property type="col" id="0" name="weight">1</property>
+      <property type="col" id="1" name="weight">1</property>
+    </containerlayout>
+    <child>
+      <object class="ttk.Frame" id="header_frame" named="True">
+        <property name="height">200</property>
+        <property name="width">200</property>
+        <layout manager="grid">
+          <property name="column">0</property>
+          <property name="columnspan">3</property>
+          <property name="row">0</property>
+        </layout>
+        <child>
+          <object class="ttk.Label" id="label1">
+            <property name="background">#B0C4DE</property>
+            <property name="compound">text</property>
+            <property name="cursor">arrow</property>
+            <property name="font">{Arial} 24 {}</property>
+            <property name="padding">20</property>
+            <property name="text" translatable="yes">Notification Log Review</property>
+            <layout manager="grid">
+              <property name="column">0</property>
+              <property name="columnspan">3</property>
+              <property name="row">0</property>
+            </layout>
+          </object>
+        </child>
+      </object>
+    </child>
+    <child>
+      <object class="ttk.Frame" id="date_picker_frame" named="True">
+        <property name="height">200</property>
+        <property name="padding">5</property>
+        <property name="style">Custom.TFrame</property>
+        <property name="width">200</property>
+        <layout manager="grid">
+          <property name="column">0</property>
+          <property name="columnspan">3</property>
+          <property name="row">1</property>
+          <property name="sticky">w</property>
+        </layout>
+        <child>
+          <object class="ttk.Label" id="start_date_label" named="True">
+            <property name="font">{Arial} 16 {}</property>
+            <property name="padding">0</property>
+            <property name="text" translatable="yes">Start Date</property>
+            <layout manager="grid">
+              <property name="column">0</property>
+              <property name="padx">15</property>
+              <property name="row">0</property>
+            </layout>
+          </object>
+        </child>
+        <child>
+          <object class="ttk.Label" id="end_date_label" named="True">
+            <property name="font">{Arial} 16 {}</property>
+            <property name="padding">0</property>
+            <property name="text" translatable="yes">End Date</property>
+            <layout manager="grid">
+              <property name="column">0</property>
+              <property name="padx">15</property>
+              <property name="row">1</property>
+            </layout>
+          </object>
+        </child>
+        <child>
+          <object class="tkcalendar.DateEntry" id="dateentry1">
+            <layout manager="grid">
+              <property name="column">1</property>
+              <property name="row">0</property>
+            </layout>
+          </object>
+        </child>
+        <child>
+          <object class="tkcalendar.DateEntry" id="dateentry2">
+            <layout manager="grid">
+              <property name="column">1</property>
+              <property name="row">1</property>
+            </layout>
+          </object>
+        </child>
+      </object>
+    </child>
+    <child>
+      <object class="ttk.Label" id="search_keywords_label" named="True">
+        <property name="background">#B0C4DE</property>
+        <property name="font">{Arial} 16 {}</property>
+        <property name="padding">0 0 0 10</property>
+        <property name="text" translatable="yes">Search Keywords:</property>
+        <layout manager="grid">
+          <property name="column">0</property>
+          <property name="columnspan">1</property>
+          <property name="row">2</property>
+          <property name="sticky">e</property>
+        </layout>
+      </object>
+    </child>
+    <child>
+      <object class="ttk.Entry" id="search_entry_box" named="True">
+        <layout manager="grid">
+          <property name="column">1</property>
+          <property name="columnspan">1</property>
+          <property name="row">2</property>
+          <property name="sticky">ew</property>
+        </layout>
+      </object>
+    </child>
+    <child>
+      <object class="ttk.Button" id="search_log_button" named="True">
+        <property name="padding">2</property>
+        <property name="text" translatable="yes">Search Logs</property>
+        <layout manager="grid">
+          <property name="column">2</property>
+          <property name="columnspan">1</property>
+          <property name="row">2</property>
+          <property name="sticky">w</property>
+        </layout>
+      </object>
+    </child>
+    <child>
+      <object class="ttk.Treeview" id="treeview" named="True">
+        <property name="selectmode">extended</property>
+        <property name="show">headings</property>
+        <layout manager="grid">
+          <property name="column">0</property>
+          <property name="columnspan">2</property>
+          <property name="row">3</property>
+          <property name="sticky">nsew</property>
+        </layout>
+        <child>
+          <object class="ttk.Treeview.Column" id="column1">
+            <property name="column_anchor">w</property>
+            <property name="heading_anchor">w</property>
+            <property name="minwidth">80</property>
+            <property name="stretch">true</property>
+            <property name="text" translatable="yes">Sender</property>
+            <property name="tree_column">false</property>
+            <property name="visible">true</property>
+            <property name="width">150</property>
+          </object>
+        </child>
+        <child>
+          <object class="ttk.Treeview.Column" id="column2">
+            <property name="column_anchor">w</property>
+            <property name="heading_anchor">w</property>
+            <property name="minwidth">20</property>
+            <property name="stretch">true</property>
+            <property name="text" translatable="yes">Date / Time</property>
+            <property name="tree_column">false</property>
+            <property name="visible">true</property>
+            <property name="width">200</property>
+          </object>
+        </child>
+        <child>
+          <object class="ttk.Treeview.Column" id="column3">
+            <property name="column_anchor">w</property>
+            <property name="heading_anchor">w</property>
+            <property name="minwidth">20</property>
+            <property name="stretch">true</property>
+            <property name="text" translatable="yes">Subject</property>
+            <property name="tree_column">false</property>
+            <property name="visible">true</property>
+            <property name="width">200</property>
+          </object>
+        </child>
+        <child>
+          <object class="ttk.Treeview.Column" id="column4">
+            <property name="column_anchor">w</property>
+            <property name="heading_anchor">w</property>
+            <property name="minwidth">20</property>
+            <property name="stretch">true</property>
+            <property name="text" translatable="yes">Message
+</property>
+            <property name="tree_column">false</property>
+            <property name="visible">true</property>
+            <property name="width">200</property>
+          </object>
+        </child>
+        <child>
+          <object class="ttk.Treeview.Column" id="column5">
+            <property name="column_anchor">w</property>
+            <property name="heading_anchor">w</property>
+            <property name="minwidth">20</property>
+            <property name="stretch">true</property>
+            <property name="text" translatable="yes"># of Subscibers</property>
+            <property name="tree_column">false</property>
+            <property name="visible">true</property>
+            <property name="width">200</property>
+          </object>
+        </child>
+      </object>
+    </child>
+    <child>
+      <object class="ttk.Label" id="notification_message_label" named="True">
+        <property name="background">#B0C4DE</property>
+        <property name="font">{Arial} 16 {}</property>
+        <property name="padding">0 10 0 0</property>
+        <property name="text" translatable="yes">Notification Message:</property>
+        <layout manager="grid">
+          <property name="column">0</property>
+          <property name="columnspan">2</property>
+          <property name="row">6</property>
+          <property name="sticky">w</property>
+        </layout>
+      </object>
+    </child>
+    <child>
+      <object class="pygubu.forms.tkwidget.Text" id="retrieved_message_textbox" named="True">
+        <property name="height">10</property>
+        <layout manager="grid">
+          <property name="column">0</property>
+          <property name="columnspan">2</property>
+          <property name="row">7</property>
+          <property name="rowspan">1</property>
+          <property name="sticky">ew</property>
+        </layout>
+      </object>
+    </child>
+    <child>
+      <object class="ttk.Button" id="exit_button" named="True">
+        <property name="text" translatable="yes">Exit</property>
+        <layout manager="grid">
+          <property name="column">3</property>
+          <property name="row">7</property>
+          <property name="sticky">n</property>
+        </layout>
+      </object>
+    </child>
+    <child>
+      <object class="ttk.Button" id="clear_button" named="True">
+        <property name="command" type="command" cbtype="simple">clear_on_click</property>
+        <property name="text" translatable="yes">Clear</property>
+        <layout manager="grid">
+          <property name="column">2</property>
+          <property name="row">7</property>
+          <property name="sticky">n</property>
+        </layout>
+      </object>
+    </child>
+  </object>
+</interface>
